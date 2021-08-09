@@ -1,21 +1,37 @@
-from discord.ext import commands
-import os
-import traceback
+# インストールした discord.py を読み込む
+import discord
 
-bot = commands.Bot(command_prefix='/')
-token = os.environ['DISCORD_BOT_TOKEN']
+import random
 
+# 自分のBotのアクセストークンに置き換えてください
+TOKEN = 'ODczOTIzNDcyNjQ3MTM5MzM4.YQ_eqA.-EqyG7cyv86uOFQzXbeOI-IL1mY'
 
-@bot.event
-async def on_command_error(ctx, error):
-    orig_error = getattr(error, "original", error)
-    error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
-    await ctx.send(error_msg)
+# 接続に必要なオブジェクトを生成
+client = discord.Client()
 
+un_omikuji = ['大吉','中吉','小吉','小凶','中凶','大凶']
 
-@bot.command()
-async def ping(ctx):
-    await ctx.send('pong')
+# 起動時に動作する処理
+@client.event
+async def on_ready():
+    # 起動したらターミナルにログイン通知が表示される
+    print('ログインしました')
 
+# メッセージ受信時に動作する処理
+@client.event
+async def on_message(message):
+    # メッセージ送信者がBotだった場合は無視する
+    if message.author.bot:
+        return
+    # 「/neko」と発言したら「にゃーん」が返る処理
+    if message.content == '!hello':
+        await message.channel.send('こんにちは。')
 
-bot.run(token)
+    if message.content == '!z':
+        await message.channel.send('ぜっとだよ！')
+
+    if message.content == '!omikuji':
+        await message.channel.send('あなたの運勢は' + un_omikuji[random.randrange(5)] + '！')
+
+# Botの起動とDiscordサーバーへの接続
+client.run(TOKEN)
